@@ -75,7 +75,7 @@ export async function createOrder(productId: string, email?: string, usePoints: 
             .where(sql`
                 ${cards.productId} = ${productId}
                 AND (COALESCE(${cards.isUsed}, false) = false)
-                AND (${cards.reservedAt} IS NULL OR ${cards.reservedAt} < NOW() - INTERVAL '1 minute')
+                AND (${cards.reservedAt} IS NULL OR ${cards.reservedAt} < NOW() - INTERVAL '5 minutes')
             `)
         return result[0]?.count || 0
     }
@@ -190,7 +190,7 @@ export async function createOrder(productId: string, email?: string, usePoints: 
                 FROM cards
                 WHERE product_id = ${productId}
                   AND COALESCE(is_used, false) = false
-                  AND reserved_at < NOW() - INTERVAL '1 minute'
+                  AND reserved_at < NOW() - INTERVAL '5 minutes'
                 LIMIT 1
                 FOR UPDATE SKIP LOCKED
             `)
