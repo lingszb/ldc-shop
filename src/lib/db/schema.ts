@@ -44,6 +44,7 @@ export const orders = pgTable('orders', {
     userId: text('user_id'), // Changed to text to align with NextAuth IDs usually
     username: text('username'),
     pointsUsed: integer('points_used').default(0),
+    currentPaymentId: text('current_payment_id'),
     createdAt: timestamp('created_at').defaultNow(),
 });
 

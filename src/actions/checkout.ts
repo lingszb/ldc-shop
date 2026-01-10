@@ -306,7 +306,8 @@ export async function createOrder(productId: string, email?: string, usePoints: 
                 userId: user?.id || null,
                 username: user?.username || null,
                 status: 'pending',
-                pointsUsed: pointsToUse
+                pointsUsed: pointsToUse,
+                currentPaymentId: orderId
             });
         }
     }
@@ -400,6 +401,11 @@ export async function getRetryPaymentParams(orderId: string) {
     // Fix: EPay requires unique out_trade_no for every request.
     // We append a timestamp suffix for retries, and strip it in the notify handler.
     const uniqueTradeNo = `${order.orderId}_retry${Date.now()}`;
+
+    // Update current_payment_id in DB so active query checks this one
+    await db.update(orders)
+        .set({ currentPaymentId: uniqueTradeNo })
+        .where(eq(orders.orderId, orderId))
 
     const payParams: Record<string, any> = {
         pid: process.env.MERCHANT_ID!,

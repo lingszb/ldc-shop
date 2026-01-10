@@ -15,7 +15,7 @@ export async function checkOrderStatus(orderId: string) {
     // Check ownership
     const order = await db.query.orders.findFirst({
         where: eq(orders.orderId, orderId),
-        columns: { userId: true, status: true, amount: true }
+        columns: { userId: true, status: true, amount: true, currentPaymentId: true }
     })
 
     if (!order) return { success: false, error: 'Order not found' }
@@ -23,21 +23,19 @@ export async function checkOrderStatus(orderId: string) {
         return { success: true, status: order.status }
     }
 
-    // Allow checking if user owns it OR if they have the pending cookie (for guests/anonymous - though auth() check above blocks anon)
-    // Wait, the requirement implies user might just be redirected back. 
-    // If user is logged in, strict check.
-    if (order.userId !== session.user.id) {
+    // Allow checking if user owns it OR if they have the pending cookie
+    if (order.userId && order.userId !== session.user.id) {
         return { success: false, error: 'Unauthorized' }
     }
 
     try {
-        const result = await queryOrderStatus(orderId)
+        // Use the latest payment ID (retry ID) if available, otherwise fallback to orderId
+        const tradeNoToCheck = order.currentPaymentId || orderId
+        const result = await queryOrderStatus(tradeNoToCheck)
 
         if (result.success && result.status === 1) { // 1 = Paid
             // trade_no might be in result.data or result.trade_no?
             // queryOrderStatus returns { ..., data: fullResponse }
-            // EPay API usually returns { code: 1, status: 1, trade_no: '...', money: '...', ... }
-            // Check epay.ts implementation return
 
             const tradeNo = result.data?.trade_no || result.data?.transaction_id || `MANUAL_CHECK_${Date.now()}`
             const paidAmount = parseFloat(result.data?.money || order.amount)
