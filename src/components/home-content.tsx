@@ -133,7 +133,7 @@ export function HomeContent({ products, announcement, visitorCount, categories: 
                                 </p>
                             </div>
                             <Link href={pendingOrders.length === 1 ? `/order/${pendingOrders[0].orderId}` : '/orders'}>
-                                <Button size="sm" variant="outline" className="border-yellow-500/30 hover:bg-yellow-500/10 hover:text-yellow-600 dark:hover:text-yellow-400">
+                                <Button size="sm" variant="outline" className="border-yellow-500/30 hover:bg-yellow-500/10 hover:text-yellow-600 dark:hover:text-yellow-400 cursor-pointer">
                                     {pendingOrders.length === 1 ? t('common.payNow') : t('common.viewOrders')}
                                 </Button>
                             </Link>
@@ -338,7 +338,7 @@ export function HomeContent({ products, announcement, visitorCount, categories: 
                                         <Button
                                             size="sm"
                                             className={cn(
-                                                "h-8 px-4 text-xs font-medium rounded-full shadow-sm hover:shadow-md transition-all active:scale-95",
+                                                "h-8 px-4 text-xs font-medium rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 cursor-pointer",
                                                 product.stockCount > 0 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted"
                                             )}
                                             disabled={product.stockCount <= 0}
