@@ -3,6 +3,7 @@
 import { useRef, useState } from "react"
 import { useI18n } from "@/lib/i18n/context"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -30,6 +31,7 @@ interface AdminProductsContentProps {
 
 export function AdminProductsContent({ products, lowStockThreshold }: AdminProductsContentProps) {
     const { t } = useI18n()
+    const router = useRouter()
     const [busy, setBusy] = useState(false)
     const busyRef = useRef(false)
 
@@ -43,6 +45,7 @@ export function AdminProductsContent({ products, lowStockThreshold }: AdminProdu
         try {
             await deleteProduct(id)
             toast.success(t('common.success'))
+            router.refresh()
         } catch (e: any) {
             toast.error(e.message)
         } finally {
@@ -58,6 +61,7 @@ export function AdminProductsContent({ products, lowStockThreshold }: AdminProdu
         try {
             await toggleProductStatus(id, !currentStatus)
             toast.success(t('common.success'))
+            router.refresh()
         } catch (e: any) {
             toast.error(e.message)
         } finally {
@@ -85,6 +89,7 @@ export function AdminProductsContent({ products, lowStockThreshold }: AdminProdu
             await reorderProduct(current.id, targetIdx)
             await reorderProduct(target.id, idx)
             toast.success(t('common.success'))
+            router.refresh()
         } catch (e: any) {
             toast.error(e.message)
         } finally {
@@ -98,12 +103,12 @@ export function AdminProductsContent({ products, lowStockThreshold }: AdminProdu
             {/* Products Table */}
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">{t('common.productManagement')}</h1>
-                <Link href="/admin/product/new">
-                    <Button>
+                <Button asChild>
+                    <Link href="/admin/product/new">
                         <Plus className="h-4 w-4 mr-2" />
                         {t('admin.products.addNew')}
-                    </Button>
-                </Link>
+                    </Link>
+                </Button>
             </div>
 
             <Card className="rounded-md border bg-card">
@@ -187,12 +192,16 @@ export function AdminProductsContent({ products, lowStockThreshold }: AdminProdu
                                     >
                                         {product.isActive ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </Button>
-                                    <Link href={`/admin/cards/${product.id}`}>
-                                        <Button variant="outline" size="sm">{t('admin.products.manageCards')}</Button>
-                                    </Link>
-                                    <Link href={`/admin/product/edit/${product.id}`} prefetch={false}>
-                                        <Button variant="outline" size="sm">{t('common.edit')}</Button>
-                                    </Link>
+                                    <Button asChild variant="outline" size="sm">
+                                        <Link href={`/admin/cards/${product.id}`}>
+                                            {t('admin.products.manageCards')}
+                                        </Link>
+                                    </Button>
+                                    <Button asChild variant="outline" size="sm">
+                                        <Link href={`/admin/product/edit/${product.id}`} prefetch={false}>
+                                            {t('common.edit')}
+                                        </Link>
+                                    </Button>
                                     <Button variant="destructive" size="sm" onClick={() => handleDelete(product.id)} disabled={busy}>
                                         {t('common.delete')}
                                     </Button>

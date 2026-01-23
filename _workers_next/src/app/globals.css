@@ -449,7 +449,7 @@
 
 .floating-field .peer:focus-visible ~ .floating-label,
 .floating-field .peer:not(:placeholder-shown) ~ .floating-label {
-  top: -0.8rem;
+  top: -1.15rem;
   color: hsl(var(--ring));
   transform: translateY(0) scale(0.95);
 }
